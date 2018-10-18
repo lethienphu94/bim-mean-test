@@ -1,0 +1,105 @@
+<div class="card">
+    <div class="card-header bg-light">
+        <h2>LOD</h2>
+    </div>
+    <div class="card-body">
+        <fieldset class="form-group">
+            <button ng-click="vm.clickModalUpdate()" class="btn btn-info" data-toggle="modal" data-target="#updateDataModal"
+                data-backdrop="static">Add LOD</button>
+           
+        </fieldset>
+        <fieldset class="form-group">
+            <div style="max-height: 400px;overflow: auto; padding-top: 15px;">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th ng-repeat="attribute in vm.attributeList">
+                                <a ng-click="vm.clickSort(attribute.value)" style="cursor: pointer;">
+                                    {{attribute.name}}
+                                    <span ng-show="vm.sortBy ===  attribute.value && vm.dirSort === 'asc'" class="fa fa-caret-up"></span>
+                                    <span ng-show="vm.sortBy ===  attribute.value  && vm.dirSort !== 'asc'" class="fa fa-caret-down"></span>
+                                </a>
+                            </th>
+                           
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in vm.listLOD">
+                            <td><img height="100px" width="100px" ng-src="{{vm.URLAPI}}lod/image/{{item.fileName}}" /></td>
+                            <td ng-bind="item.name"></td>
+                            <td ng-bind="item.value"></td>
+                            <td ng-bind="item.updateAt | date:'medium'"></td>
+                            <td ng-bind="item.createAt | date:'medium'"></td>
+                            <td>
+                                <button ng-click="vm.clickModalUpdate(item)" style="margin-right: 10px;" class="btn btn-primary"
+                                    data-toggle="modal" data-target="#updateDataModal" data-backdrop="static">
+                                    Update LOD
+                                </button>
+                                <!-- <button ng-click="vm.clickOpenUpdateMapping(item['_id'], item.type)" style="margin-right: 10px;" class="btn btn-success">Update
+                                    Mapping</button>
+                                <button ng-click="vm.clickDelete(item._id)" class="btn btn-danger">
+                                    Delete Connection
+                                </button> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+
+
+</div>
+
+<div class="modal fade" id="updateDataModal">
+    <div class="modal-dialog modal-lg">
+        <form  ng-submit="vm.clickUpdateLOD()" class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Update LOD
+                </h4>
+                <button type="button" class="close text-danger" data-dismiss="modal" aria-hidden="true">
+                    ×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6 text-center">
+                        <div class="kv-avatar">
+                            <div class="file-loading">
+                                <input file-model="vm.dataForm.imgLOD" id="imgLOD" type="file">
+                            </div>
+                            <div class="kv-avatar-hint">
+                                <small>Select file < 1500 KB</small> 
+                            </div> 
+                        </div> 
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Name<span class="kv-reqd">*</span></label>
+                            <input ng-model="vm.dataForm.name" type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Value<span class="kv-reqd">*</span></label>
+                            <input ng-model="vm.dataForm.value" type="number" class="form-control" step="1" min="1" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-info">Cancel</button>
+                <button type="submit" class="btn btn-success">Update LOD</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    .file-default-preview img{
+        width: 248px;
+        height: 248px;
+        
+    }
+</style>
