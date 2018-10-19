@@ -1,5 +1,6 @@
 const listNameModel = [
-    'LOD'
+    'LOD',
+    'BIM'
 ];
 
 exports = module.exports = function (app, mongoose) {

@@ -42,6 +42,7 @@ homeApp
 			}
 		};
 	}]);
+  
 
 // Router
 homeApp.config([
@@ -50,6 +51,56 @@ homeApp.config([
 
 		$urlRouterProvider.otherwise('/');
 		$stateProvider
+			.state('BIMView', {
+				controller: 'BIMController',
+				controllerAs: 'vm',
+				url: '/',
+				templateUrl: 'public/template/bim/index.tpl.html',
+				resolve: {
+					css: ['$ocLazyLoad', function ($ocLazyLoad) {
+						return $ocLazyLoad.load([
+							'public/css/querybuilder.css'
+						]);
+					}],
+					js: ['$ocLazyLoad', function ($ocLazyLoad) {
+						return $ocLazyLoad.load([
+							'public/js/querybuilder.js',
+							'public/js/ckeditor/ckeditor.js'
+						]);
+					}],
+					loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {
+						return $ocLazyLoad.load('public/template/bim/index.js');
+					}],
+					getListLOD: function ($http, $window, $q, $state, toastr) {
+						var deferred = $q.defer();
+						$http.get(URLAPI + 'lod')
+							.then(function (response) {
+								deferred.resolve(response.data);
+							}, function (response) {
+								if (response.data !== null)
+									toastr.error(response.data.message, 'Error message!!!');
+								else
+									toastr.error(response.data, 'Error message!!!');
+								// $state.go('DashboardView');
+							});
+						return deferred.promise;
+					},
+					getListBIM: function ($http, $window, $q, $state, toastr) {
+						var deferred = $q.defer();
+						$http.get(URLAPI + 'bim')
+							.then(function (response) {
+								deferred.resolve(response.data);
+							}, function (response) {
+								if (response.data !== null)
+									toastr.error(response.data.message, 'Error message!!!');
+								else
+									toastr.error(response.data, 'Error message!!!');
+								// $state.go('DashboardView');
+							});
+						return deferred.promise;
+					},
+				}
+			})
 			.state('LODView', {
 				controller: 'LODController',
 				controllerAs: 'vm',
@@ -58,12 +109,14 @@ homeApp.config([
 				resolve: {
 					css: ['$ocLazyLoad', function ($ocLazyLoad) {
 						return $ocLazyLoad.load([
-							'public/css/fileinput.min.css'
+							'public/css/fileinput.min.css',
+							'public/css/querybuilder.css'
 						]);
 					}],
 					js: ['$ocLazyLoad', function ($ocLazyLoad) {
 						return $ocLazyLoad.load([
-							'public/js/fileinput.min.js'
+							'public/js/fileinput.min.js',
+							'public/js/querybuilder.js'
 						]);
 					}],
 					loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {

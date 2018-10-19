@@ -7,15 +7,24 @@ router.use('/', (req, res, next) => {
 
 router
    .route('/')
+   .post(require('./create'));
+
+
+router
+   .route('/')
    .get(require('./read'));
 
+router
+   .route('/')
+   .put(require('./update'));
+
+router
+   .route('/')
+   .delete(require('./delete'));
 
 router
    .route('/image/:fileName')
    .get(require('./image'));
 
-router
-   .route('/')
-   .post(require('./create'));
 
 module.exports = router;

@@ -6,10 +6,23 @@
         <fieldset class="form-group">
             <button ng-click="vm.clickModalUpdate()" class="btn btn-info" data-toggle="modal" data-target="#updateDataModal"
                 data-backdrop="static">Add LOD</button>
-           
+            <button ng-click="vm.checkShowFilter = !vm.checkShowFilter" class="btn btn-secondary" style="margin-right: 20px;">
+                Filter
+                <span ng-show="vm.checkShowFilter === true" class="fa fa-caret-up"></span>
+                <span ng-show="vm.checkShowFilter === false" class="fa fa-caret-down ng-hide"></span>
+            </button>
         </fieldset>
+        
+        <div ng-show="vm.checkShowFilter" class="form-group">
+            <div id="condition" class="form-control">
+            </div>
+            <button ng-click="vm.clickFilter()" type="button" class="btn btn-secondary">
+                  Search
+            </button>
+        </div>
+
         <fieldset class="form-group">
-            <div style="max-height: 400px;overflow: auto; padding-top: 15px;">
+            <div style="max-height: 800px;overflow: auto; padding-top: 15px;">
                 <table class="table table-hover table-bordered">
                     <thead>
                         <tr>
@@ -37,11 +50,9 @@
                                     data-toggle="modal" data-target="#updateDataModal" data-backdrop="static">
                                     Update LOD
                                 </button>
-                                <!-- <button ng-click="vm.clickOpenUpdateMapping(item['_id'], item.type)" style="margin-right: 10px;" class="btn btn-success">Update
-                                    Mapping</button>
                                 <button ng-click="vm.clickDelete(item._id)" class="btn btn-danger">
-                                    Delete Connection
-                                </button> -->
+                                    Delete LOD
+                                </button> 
                             </td>
                         </tr>
                     </tbody>

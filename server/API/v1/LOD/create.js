@@ -1,5 +1,5 @@
 const formidable = require('formidable')
-PATH_FILEUPDATE_IMG = './FILE-UPLOAD/IMG/',
+    PATH_FILEUPDATE_IMG = './FILE-UPLOAD/IMG/',
     fs = require('fs');
 
 function getRandomToken() {
@@ -18,7 +18,9 @@ module.exports = (req, res) => {
     form.parse(req, function (err, fields, files) {
         dataUpdate = {
             name: fields.name,
-            value: fields.value
+            value: fields.value,
+            createAt: Date.now(),
+            updateAt: Date.now()
         };
         checkFileImg(files.imgLOD)
             .then(uploadIMG(files.imgLOD))
@@ -99,11 +101,11 @@ module.exports = (req, res) => {
     }
 
     function createLOD() {
-        req.MODEL_LOD.create(dataUpdate, function (err, dataConnect) {
+        req.MODEL_LOD.create(dataUpdate, function (err, data) {
             if (err)
                 return res.status(403).send(err);
 
-            return res.status(200).json({ message: 'Create Connect successful !!!' });
+            return res.status(200).json({ message: 'Create LOD successful !!!' });
         });
     }
 

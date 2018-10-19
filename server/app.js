@@ -13,8 +13,9 @@ app.use(require('morgan')('dev', {
 }));
 
 //Setup parameter Limit
-app.use(bodyParser.json({ limit: '5mb', parameterLimit: 100 }));
-app.use(bodyParser.urlencoded({ limit: '5mb', extended: true, parameterLimit: 100 }));
+// app.use(bodyParser);
+app.use(bodyParser.json({ limit: '50mb', parameterLimit: 10000 }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 100 }));
 
 // Setup Mongodb 
 const configMongo =  require('./CONFIG/mongo.json');

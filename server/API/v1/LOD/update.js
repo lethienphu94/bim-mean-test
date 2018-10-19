@@ -1,5 +1,5 @@
 const formidable = require('formidable')
-PATH_FILEUPDATE_IMG = './FILE-UPLOAD/IMG/',
+    PATH_FILEUPDATE_IMG = './FILE-UPLOAD/IMG/',
     fs = require('fs');
 
 function getRandomToken() {
@@ -14,31 +14,33 @@ function getRandomToken() {
 module.exports = (req, res) => {
 
     let dataUpdate = {};
-    let dataIO = {};
+    let dataLOD = {};
 
     let form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
         dataUpdate = {
             name: fields.name,
             value: fields.value,
-            
         };
-
-        checkFileImg(files.imgLOD)
+            checkLODExist(fields.id)
+            .then(checkFileImg(files.imgLOD))
             .then(uploadIMG(files.imgLOD))
-            .then(createLOD);
+            .then(updateLOD);
     });
 
     function checkLODExist(id) {
         return new Promise(function (resolve, reject) {
+            if (typeof id !== 'string' || id.trim() === '')
+                return res.status(403).send({ message: 'The id attribute is a string type and cannot be empty !!!' });
+            else
             req.MODEL_LOD
                 .findById(id)
-                .exec(function (err, dataConnect) {
+                .exec(function (err, data) {
                     if (err)
                         return res.status(403).send(err);
-                    if (dataConnect === null)
-                        return res.status(403).send({ message: 'Connect not exist !!!' });
-                    dataConnectOld = dataConnect;
+                    if (data === null)
+                        return res.status(403).send({ message: 'LOD not exist !!!' });
+                    dataLOD = data;
                     resolve();
                 });
         });
@@ -85,7 +87,7 @@ module.exports = (req, res) => {
                     default:
                         break;
                 }
-                dataUpdate.fileName = fileName;
+                
 
                 let fileDownload = fs.createReadStream(oldPath);
 
@@ -102,6 +104,7 @@ module.exports = (req, res) => {
                         fs.unlinkSync(pathFileIMG);
                         return res.status(403).send({ message: 'File Empty' });
                     } else {
+                        dataUpdate.fileName = fileName;
                         resolve();
                     }
 
@@ -117,12 +120,26 @@ module.exports = (req, res) => {
 
     }
 
-    function createLOD() {
-        req.MODEL_LOD.create(dataUpdate, function (err, dataConnect) {
+    function updateLOD() {
+        if (dataUpdate.fileName !== undefined) {
+            if(dataLOD.fileName !== ''){ // delete file IMG OLD
+                let pathFileIMG = PATH_FILEUPDATE_IMG + dataLOD.fileName;
+                if (fs.existsSync(pathFileIMG)) {
+                    fs.unlinkSync(pathFileIMG);
+                }
+            }
+            dataLOD.fileName = dataUpdate.fileName;
+        }
+            
+
+        dataLOD.value = dataUpdate.value;
+        dataLOD.name = dataUpdate.name;
+
+        dataLOD.save(function (err, data) {
             if (err)
                 return res.status(403).send(err);
 
-            return res.status(200).json({ message: 'Create Connect successful !!!' });
+            return res.status(200).json({ message: 'Update LOD successful !!!' });
         });
     }
 

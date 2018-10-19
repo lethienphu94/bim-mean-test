@@ -1,5 +1,5 @@
 const formidable = require('formidable')
-    PATH_FILEUPDATE_IMG = '../../../FILE-UPLOAD/IMG/',
+    PATH_FILEUPDATE_IMG = './FILE-UPLOAD/IMG/',
     path = require('path'),
     fs = require('fs');
 
@@ -9,6 +9,5 @@ module.exports = (req, res) => {
     if (!fs.existsSync(pathFileIMG)) {
         return res.status(403).send({ success: false, message: 'File does not exist' });
     }
-            
     return res.sendFile(path.join(appRoot, pathFileIMG));
 }

@@ -22,6 +22,7 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
     vm.dirSort = '';
     vm.isAPIPending = false;
     vm.URLAPI = URLAPI;
+    vm.checkShowFilter = false;
 
     vm.attributeList = [
         { name: 'Name', value: 'name' },
@@ -29,7 +30,6 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
         { name: 'Date Update', value: 'updateAt' },
         { name: 'Date Create', value: 'createAt' },
     ];
-
 
     vm.clickSort = function (attribute) {
         if (vm.isAPIPending === true)
@@ -44,6 +44,22 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
         vm.loadListLOD();
     }
 
+    vm.clickFilter = function () {
+        vm.dirSort = '';
+        vm.sortBy = '';
+        try {
+
+            var condition = $('#condition').queryBuilder('getMongo');
+            vm.condition = JSON.stringify(condition);
+            var ruleCondition = $('#condition').queryBuilder('getRules');
+            if (ruleCondition.rules.length === 0)
+                vm.condition = '{}';
+            vm.loadListLOD();
+        } catch (error) {
+            return toastr.warning('Filters are not empty !!!', 'Please wait!!!');
+        }
+    }
+
     vm.loadListLOD = function () {
         $('#loadingMask').show();
         if (vm.isAPIPending === true) {
@@ -52,7 +68,7 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
         }
         vm.isAPIPending = true;
         $http.get(URLAPI + 'lod', {
-            params: { dir: vm.dirSort, sortBy: vm.sortBy },
+            params: { dir: vm.dirSort, sortBy: vm.sortBy, condition: vm.condition },
         }).then(function (response) {
             $('#loadingMask').hide();
             vm.isAPIPending = false;
@@ -68,7 +84,7 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
     }
 
     vm.clickModalUpdate = function (dataLOD) {
-       
+
         if (dataLOD === undefined) { // Add LOD
             vm.dataForm = {
                 id: '',
@@ -88,14 +104,14 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
                 elErrorContainer: '#kv-avatar-errors-1',
                 msgErrorClass: 'alert alert-block alert-danger',
                 defaultPreviewContent: '<img src="public/img/default.jpg" alt="Image LOD">',
-                layoutTemplates: {main2: '{preview} ' + ' {remove} {browse}'},
+                layoutTemplates: { main2: '{preview} ' + ' {remove} {browse}' },
                 allowedFileExtensions: ["jpg", "png", "gif", "svg"]
             });
 
         } else {
             var imgDefault = "public/img/default.jpg";
-            if(dataLOD.fileName !== '')
-                imgDefault = vm.URLAPI + 'lod/image/' + dataLOD.fileName ;
+            if (dataLOD.fileName !== '')
+                imgDefault = vm.URLAPI + 'lod/image/' + dataLOD.fileName;
             $('#imgLOD').fileinput('destroy').fileinput({
                 overwriteInitial: true,
                 maxFileSize: 1500,
@@ -141,8 +157,8 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
         fd.append('value', dataForm.value);
 
         var methodHTTP = 'post';
-        if(dataForm.id !== 'put')
-
+        if (dataForm.id !== '')
+            methodHTTP = 'put';
 
         $http[methodHTTP](URLAPI + 'lod', fd, {
             transformRequest: angular.identity,
@@ -165,7 +181,42 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
         });
     }
 
+    vm.clickDelete = function (id) {
+
+        var answer = confirm("Do you want to delete this LOD ?");
+        if (!answer) return;
+        $('#loadingMask').show();
+        $http.delete(URLAPI + 'lod', {
+            params: { id: id }
+        }).then(function (response) {
+            $('#loadingMask').hide();
+            setTimeout(function () {
+                vm.loadListLOD();
+            }, 300);
+            toastr.success(response.data.message, 'Success message!!!');
+        }, function (response) {
+            $('#loadingMask').hide();
+            if (response.data !== null) {
+                if (response.data.message !== undefined)
+                    toastr.error(response.data.message, 'Error message!!!');
+                else
+                    toastr.error('Unknown error', 'Error message!!!');
+            }
+        });
+    };
 
 
+    $('#condition').queryBuilder({
+        allow_empty: true,
+        rules: { rules: [] },
+        filters: [
+            { id: 'name', label: 'Name', type: 'string' },
+            { id: 'value', label: 'value', type: 'double', validation: { min: 1, step: 1 } },
+        ],
+        plugins: [
+            'sortable',
+            'invert'
+        ]
+    });
 
 }
