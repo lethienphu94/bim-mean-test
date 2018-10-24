@@ -65,7 +65,7 @@ homeApp.config([
 					js: ['$ocLazyLoad', function ($ocLazyLoad) {
 						return $ocLazyLoad.load([
 							'public/js/querybuilder.js',
-							'public/js/ckeditor/ckeditor.js'
+							'public/js/ckeditor/ckeditor.js',
 						]);
 					}],
 					loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -116,7 +116,7 @@ homeApp.config([
 					js: ['$ocLazyLoad', function ($ocLazyLoad) {
 						return $ocLazyLoad.load([
 							'public/js/fileinput.min.js',
-							'public/js/querybuilder.js'
+							'public/js/querybuilder.js',
 						]);
 					}],
 					loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {

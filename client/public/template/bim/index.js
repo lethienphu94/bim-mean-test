@@ -68,9 +68,9 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
         if (vm.isAPIPending === true) {
             return toastr.warning('Please wait until all requests complete!', 'Please wait!!!');
         }
-        var linkDownload = URLAPI + 'bim/export-pdf?dir='+vm.dirSort + '&sortBy='+vm.sortBy +'&condition=' +vm.condition;
-        window.open(linkDownload, '_blank', '');  
-     
+        var linkDownload = URLAPI + 'bim/export-pdf?dir=' + vm.dirSort + '&sortBy=' + vm.sortBy + '&condition=' + vm.condition;
+        window.open(linkDownload, '_blank', '');
+
     }
 
     vm.loadListBIM = function () {
@@ -80,7 +80,7 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
         $('#loadingMask').show();
         vm.isAPIPending = true;
         $http.get(URLAPI + 'bim', {
-            params: { dir: vm.dirSort, sortBy: vm.sortBy, condition: vm.condition},
+            params: { dir: vm.dirSort, sortBy: vm.sortBy, condition: vm.condition },
         }).then(function (response) {
             $('#loadingMask').hide();
             vm.isAPIPending = false;
@@ -199,7 +199,7 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
     };
 
     var objLOD = {};
-    vm.listLOD.forEach( function (dataLOD) {
+    vm.listLOD.forEach(function (dataLOD) {
         objLOD[dataLOD._id] = dataLOD.name + '( ' + dataLOD.value + ' )';
     });
 
@@ -210,11 +210,11 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
         rules: { rules: [] },
         filters: [
             { id: 'name', label: 'Name', type: 'string' },
-            { id: 'designerCode', label: 'Designer code', type: 'string'},
-            { id: 'cenkrosCode', label: 'Cenkros code', type: 'string'},
-            { id: 'parameters.sucategory_id.term', label: 'SubCategory Term', type: 'string'},
-            { id: 'parameters.unit', label: 'Unit', type: 'string'},
-            { id: 'lodLevels', label: 'LOD', type: 'string', input: 'select', values:objLOD, },
+            { id: 'designerCode', label: 'Designer code', type: 'string' },
+            { id: 'cenkrosCode', label: 'Cenkros code', type: 'string' },
+            { id: 'parameters.sucategory_id.term', label: 'SubCategory Term', type: 'string' },
+            { id: 'parameters.unit', label: 'Unit', type: 'string' },
+            { id: 'lodLevels', label: 'LOD', type: 'string', input: 'select', values: objLOD, },
 
         ],
         plugins: [
@@ -222,6 +222,6 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
             'invert'
         ]
     });
-    
+
 
 }
