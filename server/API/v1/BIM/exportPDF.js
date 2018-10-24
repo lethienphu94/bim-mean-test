@@ -1,6 +1,7 @@
 const fs = require('fs'),
     pdf = require('html-pdf'),
-    PATH_FILEUPDATE_PDF = './FILE-UPLOAD/PDF/'
+    PATH_FILEUPDATE_PDF = './FILE-UPLOAD/PDF/',
+    PATH_FILEUPDATE_IMG = './FILE-UPLOAD/IMG/'
     // URL_IMG = 'localhost:400/'
 
 
@@ -43,11 +44,74 @@ module.exports = (req, res) => {
             });
         });
     }
-    function writeHTML() {
-        let lengthBIM = dataBIM.length -1 ;
 
+    function readFileIMG (fileName) {
         return new Promise(function (resolve, reject) {
-            dataBIM.forEach((BIM, indexBIM) => {
+            let pathFileIMG = PATH_FILEUPDATE_IMG + fileName;
+
+            if (!fs.existsSync(pathFileIMG)) {
+                pathFileIMG = PATH_FILEUPDATE_IMG + 'noImage.png'
+            }
+            fs.readFile(pathFileIMG, function read(err, data) {
+                
+                if (err) {
+                    return res.status(403).send(err);
+                }
+                resolve (new Buffer(data).toString('base64'));
+            });
+    
+        });
+    }
+
+    function writeContenHTML(dataLOD) {
+        return new Promise(function (resolve, reject) {
+            //Thead Value LOD
+            let lengthLOD = dataLOD.length - 1;
+            let htmlListIMG = `<tr>
+                <td>Geometry</td>
+            `;
+            asyncForEach(dataLOD,async (LOD, indexLOD) => {
+                // Value LOD
+                htmlTemplate += `
+                    <th class="valueLOD">
+                        <span>${LOD.value}</span>
+                    </th>
+                    `
+                let imgBase64 = await (readFileIMG (LOD.fileName) );
+                htmlListIMG += `<td><img src="data:image/png;base64, ${imgBase64}"/></td>`;
+
+                if (indexLOD === lengthLOD) {
+                    htmlListIMG += '</tr>';
+                   
+                    htmlTemplate += `</thead>
+                        <tbody>
+                            ${htmlListIMG}
+                        </tbody>
+                            <tfoot ><tr><td>Data List</td><td colspan="999"style="border-right: none;">* more information about the element available on LOD Platform</td></tr></tfoot>
+                        </table>
+                    </div>
+                `;
+                    resolve();
+                }
+            });
+         
+           
+        });
+    }
+
+    async function asyncForEach(array, callback) {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array)
+        }
+    }
+
+    function  writeHTML() {
+        let lengthBIM = dataBIM.length -1 ;
+     
+        return new Promise(function   (resolve, reject) {
+
+            asyncForEach(dataBIM,async (BIM, indexBIM) => {
+                console.log(indexBIM);
                 //Header 
                 htmlTemplate += `
                     <div class="header">
@@ -85,32 +149,10 @@ module.exports = (req, res) => {
                             </th>
                 `;
                 //Thead Value LOD
-                let lengthLOD = BIM['lodLevels'].length - 1;
-                let htmlListIMG = `<tr>
-                    <td>Geometry</td>
-                `;
-                BIM['lodLevels'].forEach((LOD, indexLOD) => {
-                    // Value LOD
-                    htmlTemplate +=`
-                        <th class="valueLOD">
-                            <span>${LOD.value}</span>
-                        </th>
-                        `
-                    // IMG 
-                    htmlListIMG += `<td><img src="${URL_IMG_LOD + LOD.fileName}"/></td>`;
-                    if(indexLOD === lengthLOD) {
-                        htmlListIMG += '</tr>';
-                    }
-                });
-                htmlTemplate += `</thead>
-                        <tbody>
-                            ${htmlListIMG}
-                        </tbody>
-                        <tfoot ><tr><td>Data List</td><td colspan="999"style="border-right: none;">* more information about the element available on LOD Platform</td></tr></tfoot>
-                    </table>
-                </div>
-                `;
-                // footer and Page 
+
+                await writeContenHTML(BIM['lodLevels']);
+                // console.log('hdfhdfgh')
+                // // footer and Page 
                 htmlTemplate += `
                     <div class="footer">
                         <p>All information about the element including classifiction, rules for modeling and download links is available on the website</p>
@@ -118,13 +160,12 @@ module.exports = (req, res) => {
                     </div>
                     <br><div style="page-break-after:always;"></div>
                 `;
+           
                 if(indexBIM === lengthBIM) {
                     htmlTemplate += '</body></html>';
                     resolve();
                 }
                     
-                
-                
             });
         });
 
