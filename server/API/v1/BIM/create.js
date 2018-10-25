@@ -2,19 +2,19 @@ module.exports = (req, res) => {
     var dataForm = req.body;
 
     var dataUpdate = {};
-    var attributeArray = ['name', 'designerCode', 'cenkrosCode', 'description'];
+    var attributeArray = ['name', 'designerCode', 'cenkrosCode'];
 
     attributeArray.forEach(nameAttribute => {
         if (typeof dataForm[nameAttribute] === 'string' && dataForm[nameAttribute].trim() !== '') {
             dataUpdate[nameAttribute] = dataForm[nameAttribute];
         }
     })
-    dataUpdate['parameters'] = { unit: '', sucategory_id: { term: '' } };
+    // dataUpdate['parameters'] = { unit: '', sucategory_id: { term: '' } };
 
-    if (typeof dataForm.unit === 'string' && dataForm.unit.trim() !== '')
-        dataUpdate['parameters']['unit'] = dataForm.unit;
-    if (typeof dataForm.term === 'string' && dataForm.term.trim() !== '')
-        dataUpdate['parameters']['sucategory_id']['term'] = dataForm.term;
+    // if (typeof dataForm.unit === 'string' && dataForm.unit.trim() !== '')
+    //     dataUpdate['parameters']['unit'] = dataForm.unit;
+    // if (typeof dataForm.term === 'string' && dataForm.term.trim() !== '')
+    //     dataUpdate['parameters']['sucategory_id']['term'] = dataForm.term;
 
     dataUpdate.lodLevels = [];
 

@@ -12,9 +12,7 @@ module.exports = (req, res) => {
     <html>
         <head>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-            <style type="text/css">
-                body {margin: 0;padding: 0;}.header {background-color: #ddd;position: relative;z-index: 1;}.header td {border: none;font-size: 12px;}.logo {float: right;}.clearfix {content: "";clear: both;display: table;}.dataBasic {float: left;}.dataBasic .value {padding-left: 50px;}.content {padding-top: 20px;}.content table, th, td {border: 1px solid black;font-size: 12px;font-weight: normal;}.content table {border: 2px solid black;border-collapse: collapse;width: 100%;}.content table .valueLOD{text-align: right;}.content table .valueLOD span{margin-right: 50px;border-left: 1px solid black;}table img{ max-width: 100%; height: auto; width: auto; /* ie8 */ }.footer {position: relative;z-index: 1;background-color: #ddd;margin-top: 10px;}.footer p {font-size: 12px;}
-            </style>
+            <style type="text/css">body {margin: 0;padding: 0;}.header {background-color: #ddd;position: relative;z-index: 1;}.header td {border: none;font-size: 8px;}.logo {float: right;}.clearfix {content: "";clear: both;display: table;}.dataBasic {float: left;}.dataBasic .value {padding-left: 50px;}.content {padding-top: 20px;}.content table,th,td {border: 1px solid black;font-size: 8px;font-weight: normal;}.content table {border: 2px solid black;border-collapse: collapse;width: 100%;}table img {max-width: 100%;max-height: 400px;width: auto;/* ie8 */}.footer {position: relative;z-index: 1;background-color: #ddd;margin-top: 10px;}.footer p {font-size: 8px;}</style>
         </head>
         <body>
     `;
@@ -23,6 +21,7 @@ module.exports = (req, res) => {
     let dataListLOD = {};
     let dataJson = [];
     let dataIMG = [];
+  
     async function execute() {
         await  getListBIM();
         await writeHTML();
@@ -67,25 +66,78 @@ module.exports = (req, res) => {
         return new Promise(function (resolve, reject) {
             //Thead Value LOD
             let lengthLOD = dataLOD.length - 1;
-            let htmlListIMG = `<tr>
+            let htmlListIMG = 
+            `<tr>
                 <td>Geometry</td>
             `;
+            let htmlListDescription = 
+            `<tr>
+                <td>Description</td>
+            `;
+
+
+            let maxLenghtParam = 0;
+            dataLOD.forEach( (LOD, indexLOD) => {
+                let param = LOD.parameters;
+                if (Array.isArray(param)) {
+                    let lengthParam = param.length;
+                    if (maxLenghtParam < lengthParam)
+                        maxLenghtParam = lengthParam;
+                }else
+                dataLOD[indexLOD].parameters = [];
+            });
+
+            let htmlListParam = 
+            `<tr>
+                <td rowspan="${maxLenghtParam}">Parameters</td>
+            `;
+
+            if(maxLenghtParam > 0) {
+                for( var iParam = 0 ; iParam < maxLenghtParam; iParam ++  ) {
+                    if(iParam != 0)
+                    htmlListParam += '<tr>';
+                    for( var iLOD = 0; iLOD <=lengthLOD ; iLOD ++  ) {
+                        let param = dataLOD[iLOD].parameters[iParam];
+                        if(param === undefined) {
+                            htmlListParam += '<td></td><td></td>';
+                        }else {
+                            htmlListParam += `<td>${param.attribute}</td><td>${param.value}</td>`;
+                        }
+                            
+                    }
+                    htmlListParam += '</tr>';
+                }
+            } else {
+                for( var iLOD = 0; iLOD <=lengthLOD ; iLOD ++  ) {
+                    if(iLOD != 0)
+                        htmlListParam += '<tr>';
+                    htmlListParam += '<td></td><td></td>';
+                    htmlListParam += '</tr>';  
+                }
+            }
+            
+
             asyncForEach(dataLOD,async (LOD, indexLOD) => {
                 // Value LOD
                 htmlTemplate += `
-                    <th class="valueLOD">
-                        <span>${LOD.value}</span>
-                    </th>
+                    <th></th>
+                    <th style="width: 30px;">${LOD.value}</th>
                     `
                 let imgBase64 = await (readFileIMG (LOD.fileName) );
-                htmlListIMG += `<td><img src="data:image/png;base64, ${imgBase64}"/></td>`;
+                htmlListIMG += `<td colspan="2"><img src="data:image/png;base64, ${imgBase64}"/></td>`;
+                htmlListDescription += `<td style="min-width:100px;" colspan="2">${LOD.description}</td>`;
 
                 if (indexLOD === lengthLOD) {
                     htmlListIMG += '</tr>';
+                    htmlListDescription += '</tr>';
+                    htmlListParam += '</tr>';
                    
                     htmlTemplate += `</thead>
+                    
                         <tbody>
                             ${htmlListIMG}
+                            ${htmlListDescription}
+                            ${htmlListParam}
                         </tbody>
                             <tfoot ><tr><td>Data List</td><td colspan="999"style="border-right: none;">* more information about the element available on LOD Platform</td></tr></tfoot>
                         </table>
@@ -111,7 +163,6 @@ module.exports = (req, res) => {
         return new Promise(function   (resolve, reject) {
 
             asyncForEach(dataBIM,async (BIM, indexBIM) => {
-                console.log(indexBIM);
                 //Header 
                 htmlTemplate += `
                     <div class="header">
@@ -149,9 +200,7 @@ module.exports = (req, res) => {
                             </th>
                 `;
                 //Thead Value LOD
-
                 await writeContenHTML(BIM['lodLevels']);
-                // console.log('hdfhdfgh')
                 // // footer and Page 
                 htmlTemplate += `
                     <div class="footer">
@@ -163,6 +212,7 @@ module.exports = (req, res) => {
            
                 if(indexBIM === lengthBIM) {
                     htmlTemplate += '</body></html>';
+                
                     resolve();
                 }
                     
@@ -204,7 +254,7 @@ module.exports = (req, res) => {
                 .sort(sortBy)
                 .populate({
                     path: 'lodLevels',
-                    select: 'fileName name value',
+                    select: 'fileName name value description parameters',
                     options:{ sort:{value : 1}}
                 })
                 .exec(function (err, listBIM) {

@@ -29,8 +29,8 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
         { name: 'Name', value: 'name' },
         { name: 'Designer code', value: 'designerCode' },
         { name: 'Cenkros code', value: 'cenkrosCode' },
-        { name: 'SubCategory Term', value: 'parameters.sucategory_id.term' },
-        { name: 'Unit', value: 'parameters.unit' },
+        // { name: 'SubCategory Term', value: 'parameters.sucategory_id.term' },
+        // { name: 'Unit', value: 'parameters.unit' },
         { name: 'Date Update', value: 'updateAt' },
         { name: 'Date Create', value: 'createAt' },
     ];
@@ -95,13 +95,8 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
         });
     }
 
-    var ckeditorTemp = null;
-
     vm.clickModalUpdate = function (dataBIM) {
-        if (ckeditorTemp) {
-            CKEDITOR.instances['descriptionCKedit'].destroy();
-            CKEDITOR.remove('descriptionCKedit');
-        }
+     
         vm.dataForm = {
             id: '',
             name: '',
@@ -126,14 +121,7 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
             vm.dataForm['unit'] = dataBIM['unitShow'];
             vm.dataForm['term'] = dataBIM['subCategoryTerm'];
         }
-        vm.dataForm['description'] = vm.dataForm['description'] || '';
-
-        setTimeout(() => {
-            ckeditorTemp = CKEDITOR.replace('descriptionCKedit', {
-                removeButtons: 'Image,Flash'
-            });
-            ckeditorTemp.setData(vm.dataForm['description']);
-        }, 200);
+       
     }
 
     vm.clickUpdateBIM = function () {
@@ -144,7 +132,7 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
             checkError = true;
             toastr.error('Please enter a Name !!!', 'Error Message');
         }
-        dataForm.description = ckeditorTemp.getData();
+        
 
         if (checkError === true) {
             $('#loadingMask').hide();
@@ -212,8 +200,8 @@ function BIMController($rootScope, $http, $window, toastr, getListLOD, getListBI
             { id: 'name', label: 'Name', type: 'string' },
             { id: 'designerCode', label: 'Designer code', type: 'string' },
             { id: 'cenkrosCode', label: 'Cenkros code', type: 'string' },
-            { id: 'parameters.sucategory_id.term', label: 'SubCategory Term', type: 'string' },
-            { id: 'parameters.unit', label: 'Unit', type: 'string' },
+            // { id: 'parameters.sucategory_id.term', label: 'SubCategory Term', type: 'string' },
+            // { id: 'parameters.unit', label: 'Unit', type: 'string' },
             { id: 'lodLevels', label: 'LOD', type: 'string', input: 'select', values: objLOD, },
 
         ],

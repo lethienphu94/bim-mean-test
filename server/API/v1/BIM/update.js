@@ -23,7 +23,7 @@ module.exports = (req, res) => {
     }
 
     function updateBIM() {
-        var attributeArray = ['name', 'designerCode', 'cenkrosCode', 'description'];
+        var attributeArray = ['name', 'designerCode', 'cenkrosCode'];
 
         attributeArray.forEach(nameAttribute => {
             if (typeof dataForm[nameAttribute] === 'string' && dataForm[nameAttribute].trim() !== '') {
@@ -32,10 +32,10 @@ module.exports = (req, res) => {
         })
 
 
-        if (typeof dataForm.unit === 'string' && dataForm.unit.trim() !== '')
-            dataUpdate['parameters']['unit'] = dataForm.unit;
-        if (typeof dataForm.term === 'string' && dataForm.term.trim() !== '')
-            dataUpdate['parameters']['sucategory_id']['term'] = dataForm.term;
+        // if (typeof dataForm.unit === 'string' && dataForm.unit.trim() !== '')
+        //     dataUpdate['parameters']['unit'] = dataForm.unit;
+        // if (typeof dataForm.term === 'string' && dataForm.term.trim() !== '')
+        //     dataUpdate['parameters']['sucategory_id']['term'] = dataForm.term;
 
 
 

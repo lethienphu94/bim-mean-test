@@ -83,13 +83,22 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
         });
     }
 
+    var ckeditorTemp = null;
+
     vm.clickModalUpdate = function (dataLOD) {
+        if (ckeditorTemp || CKEDITOR.instances['descriptionCKedit'] !== undefined) {
+            CKEDITOR.instances['descriptionCKedit'].destroy();
+            CKEDITOR.remove('descriptionCKedit');
+        }
+        $('#loadingMask').show();
 
         if (dataLOD === undefined) { // Add LOD
             vm.dataForm = {
                 id: '',
                 name: '',
-                value: 0
+                value: 0,
+                description:'',
+                parameters:[]
             }
             $("#imgLOD").fileinput('destroy').fileinput({
                 overwriteInitial: true,
@@ -132,11 +141,35 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
             vm.dataForm = angular.copy(dataLOD);
             vm.dataForm['id'] = dataLOD['_id'];
         }
+
+        vm.dataForm['description'] = vm.dataForm['description'] || '';
+        vm.dataForm['parameters'] = vm.dataForm['parameters'] || [];
+        $('#updateDataModal').modal('show');
+        setTimeout(() => {
+            ckeditorTemp = CKEDITOR.replace('descriptionCKedit', {
+                removeButtons: 'Image,Flash'
+            });
+            ckeditorTemp.setData(vm.dataForm['description']);
+            $('#loadingMask').hide();
+            
+        }, 200);
     }
+
+    vm.clickAddAttribute = function() {
+        vm.dataForm.parameters.push({
+            'attribute' : '',
+            'value': ''
+        });
+    };
+
+    vm.deleteOption = function (key) {
+        vm.dataForm.parameters.splice(key, 1);
+    };
 
     vm.clickUpdateLOD = function () {
         $('#loadingMask').show();
         var dataForm = angular.copy(vm.dataForm);
+        dataForm.description = ckeditorTemp.getData();
         var checkError = false;
         if (typeof dataForm.name !== 'string' || dataForm.name.trim() === '') {
             checkError = true;
@@ -147,13 +180,36 @@ function LODController($rootScope, $http, $window, toastr, getListLOD) {
             checkError = true;
             toastr.error('Value must be greater than 0 !!!', 'Error Message');
         }
+
+        var attributeCheck = [];
+        var nameAttribute;
+        angular.forEach(dataForm.parameters, function (dataAttribute) {
+            nameAttribute = dataAttribute.attribute.trim();
+            dataAttribute.attribute = nameAttribute;
+            if (nameAttribute === '') {
+                toastr.error('The name attribute cannot be empty', 'Message!');
+                checkError = true;
+            }
+
+            if (attributeCheck.indexOf(nameAttribute) !== -1) {
+                toastr.error('Attribute Duplicate: ' + nameAttribute + ' ', 'Message!');
+                checkError = true;
+            }
+            attributeCheck.push(nameAttribute);
+        });
+        
         if (checkError === true) {
             $('#loadingMask').hide();
             return;
         }
+
+
         var fd = new FormData();
         fd.append('imgLOD', $('#imgLOD').fileinput('getFileStack')[0]);
+        fd.append('id', dataForm.id);
         fd.append('name', dataForm.name);
+        fd.append('parameters', JSON.stringify(dataForm.parameters));
+        fd.append('description', dataForm.description);
         fd.append('value', dataForm.value);
 
         var methodHTTP = 'post';

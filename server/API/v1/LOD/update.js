@@ -21,12 +21,63 @@ module.exports = (req, res) => {
         dataUpdate = {
             name: fields.name,
             value: fields.value,
+            parameters: fields.parameters,
+            description: fields.description
         };
-            checkLODExist(fields.id)
+        try {
+            dataUpdate.parameters = JSON.parse(dataUpdate.parameters);
+        } catch (error) {
+            console.log(error);
+            dataUpdate.parameters = '';
+        }
+        checkLODExist(fields.id)
+            .then(checkParameters)
             .then(checkFileImg(files.imgLOD))
             .then(uploadIMG(files.imgLOD))
             .then(updateLOD);
     });
+
+    function checkParameters () {
+        return new Promise(function (resolve, reject) {
+           
+         
+            if(Array.isArray(dataUpdate.parameters) === false){
+                resolve();
+            } else {
+                let parametersTemp = [];
+                var attributeCheck = [];
+                var nameAttribute;
+                let lengthParam =  dataUpdate.parameters.length - 1;
+                if(lengthParam === -1)
+                    resolve();
+  
+                dataUpdate.parameters.forEach( (dataAttribute, index) => {
+                    nameAttribute = dataAttribute.attribute;
+                    if (typeof nameAttribute !== 'string' || nameAttribute.trim() === '') 
+                        return res.status(403).send({ message: 'The name attribute cannot be empty !!!' });
+
+                    if ( typeof dataAttribute.value !== 'string') 
+                        return res.status(403).send({ message: 'The value parameters is type string !!!' });
+                       
+                    if (attributeCheck.indexOf(nameAttribute) !== -1)
+                        return res.status(403).send({ message: 'Attribute Duplicate: ' + nameAttribute + '!!!' });
+                    attributeCheck.push(nameAttribute);
+
+                    parametersTemp.push({
+                        attribute: dataAttribute.attribute,
+                        value: dataAttribute.value
+                    });
+                    if(lengthParam  === index) {
+                        dataUpdate.parameters = parametersTemp;
+                        resolve();
+                    }
+                });
+               
+            }
+            
+
+        });
+    }
 
     function checkLODExist(id) {
         return new Promise(function (resolve, reject) {
@@ -131,10 +182,16 @@ module.exports = (req, res) => {
             dataLOD.fileName = dataUpdate.fileName;
         }
             
+        if(typeof dataUpdate.description === 'string')
+            dataLOD.description  =  dataUpdate.description;
 
+        if(Array.isArray(dataUpdate.parameters))
+            dataLOD.parameters  =  dataUpdate.parameters;
+            
         dataLOD.value = dataUpdate.value;
         dataLOD.name = dataUpdate.name;
 
+        dataLOD.updateAt = Date.now();
         dataLOD.save(function (err, data) {
             if (err)
                 return res.status(403).send(err);

@@ -53,8 +53,8 @@ module.exports = (req, res) => {
 						dataTemp['lodLevelShow'].push( dataLOD.name + '(' + dataLOD.value + ')' );
 					})
 				}
-				dataTemp['subCategoryTerm'] = dataBIM['parameters']['sucategory_id']['term'];
-				dataTemp['unitShow'] = dataBIM['parameters']['unit'];
+				// dataTemp['subCategoryTerm'] = dataBIM['parameters']['sucategory_id']['term'];
+				// dataTemp['unitShow'] = dataBIM['parameters']['unit'];
 				dataTemp['geometry'] = geometry;
 				resultData.push(dataTemp);
 				

@@ -47,8 +47,8 @@
                             <td ng-bind="item.name"></td>
                             <td ng-bind="item.designerCode"></td>
                             <td ng-bind="item.cenkrosCode"></td>
-                            <td ng-bind="item.subCategoryTerm"></td>
-                            <td ng-bind="item.unitShow"></td>
+                            <!-- <td ng-bind="item.subCategoryTerm"></td> -->
+                            <!-- <td ng-bind="item.unitShow"></td> -->
 
                             <td ng-bind="item.updateAt | date:'medium'"></td>
                             <td ng-bind="item.createAt | date:'medium'"></td>
@@ -108,19 +108,16 @@
                     </select>
 
                 </div>
-
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="descriptionCKedit" class="form-control"></textarea>
-                </div>
-                <div class="form-group">
+<!-- 
+                -->
+                <!-- <div class="form-group">
                     <label>Term SubCategory</label>
                     <input ng-model="vm.dataForm.term" type="text" class="form-control">
                 </div>
                 <div class="form-group">
                     <label>Unit</label>
                     <input ng-model="vm.dataForm.unit" type="text" class="form-control">
-                </div>
+                </div> -->
 
             </div>
             <div class="card-footer">
