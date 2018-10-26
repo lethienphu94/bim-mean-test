@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="homeApp">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>TestExportPDF</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="public/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom fonts for this template -->
+	<!-- <link href="font/Merriweather" rel="stylesheet"> -->
+	<link href="public/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="public/css/glyphicons.css" />
+
+	<!-- Custom styles for this template -->
+	<link rel="stylesheet" href="public/css/angular-toastr.min.css" />
+	<link rel="stylesheet" href="public/css/home.css" />
+
+</head>
+
+<body ng-controller="HomeController as vm" style="margin: 30px;">
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 text-center">
+
+				<form ng-submit="vm.clickSubmitPDF()">
+					<div class="form-group">
+						<label class="font-weight-bold text-lg">Json BIM</label>
+						<textarea ng-model="vm.jsonBIM" rows="10" class="form-control"></textarea>
+					</div>
+					<div class="form-group">
+						<button ng-click="vm.clickSetDefault()" type="button" class="btn btn-info">Default Data BIM</button>
+						<button type="submit" class="btn btn-success">Export PDF</button>
+					</div>
+				</form>
+	
+			</div>
+		</div>
+	</div>
+	<!-- Bootstrap core JavaScript -->
+	<script src="public/vendor/jquery/jquery.min.js"></script>
+	<script src="public/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<!--  Angular Js 1.7.3 -->
+	<script src="public/js/angular.min.js"></script>
+    <script src="public/js/angular-toastr.tpls.min.js"></script>
+	<script src="testExportPDF.js"></script>
+
+	<!-- Custom scripts for this template -->
+	<!-- <script src="js/coming-soon.min.js"></script> -->
+
+</body>
+
+</html>
