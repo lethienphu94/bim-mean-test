@@ -106,10 +106,6 @@ module.exports = (req, res) => {
                     </div>`;
 
     let dataBIM = [];
-    let dataListLOD = {};
-    
-    let dataJson = [];
-    let dataIMG = [];
     let listDataBaseIMG = {}
       
     async function execute() {
