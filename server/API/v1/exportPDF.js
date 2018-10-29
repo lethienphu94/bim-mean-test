@@ -77,7 +77,8 @@ module.exports = (req, res) => {
 
                 table img {
                     max-width: 100%;
-                    min-height: 150px;
+                    min-height: 100px;
+                    min-witdh:  100px;
                     width: auto;
                     /* ie8 */
                 }
@@ -230,7 +231,7 @@ module.exports = (req, res) => {
     function  writeHBRLOD(listLOD) {
         return new Promise(function (resolve, reject) { 
             htmlHBRLOD = `
-            <th style="width: 120px">
+            <th style="width:75px;">
                 HBR LOD Level
             </th>`;
             listLOD.forEach(nameLOD => {
@@ -325,7 +326,7 @@ module.exports = (req, res) => {
             let lengthListDesc = listArrayDesc.length - 1;
             htmlDescription = '<td>Description</td>';
             asyncForEach(listArrayDesc, async (valueDesc, indexDesc) => {
-                htmlDescription += `<td colspan="2" style="min-height:80px;">${valueDesc}</td>`
+                htmlDescription += `<td colspan="2" style="min-height:100px;">${valueDesc}</td>`
                 if (indexDesc === lengthListDesc)
                     resolve();
             });
@@ -350,7 +351,7 @@ module.exports = (req, res) => {
                                 && checkString(dataParam['subcategory_id']['term'])
                                ) {
                                 listOBJParam[nameLOD].push(`
-                                    <td style="min-width: 80px;">${dataParam['subcategory_id']['term']}</td>
+                                    <td style="min-width: 100px;">${dataParam['subcategory_id']['term']}</td>
                                     <td style="min-width: 20px;">${dataParam['unit']}</td>
                                     `);
                             }
@@ -372,7 +373,7 @@ module.exports = (req, res) => {
                     listLOD.forEach(nameLOD => {
                         let valueParam = listOBJParam[nameLOD][indexParam];
                         if(valueParam === undefined)
-                            valueParam = '<td style="min-width: 80px;"></td><td style="min-width: 20px;"></td>';
+                            valueParam = '<td style="min-width: 100px;"></td><td style="min-width: 20px;"></td>';
                         htmlParameters += valueParam;
                         
                     });
@@ -380,7 +381,7 @@ module.exports = (req, res) => {
                 }
             } else {
                 listLOD.forEach(nameLOD => {
-                    valueParam = '<td style="min-width: 80px;"></td><td style="min-width: 20px;"></td>';
+                    valueParam = '<td style="min-width: 100px;"></td><td style="min-width: 20px;"></td>';
                 });
             }
             resolve();
@@ -390,7 +391,7 @@ module.exports = (req, res) => {
     function exportFilePDF(pathFile) {
         return new Promise(function (resolve, reject) {
             let writeStream = fs.createWriteStream(pathFile);
-            pdf.create(htmlTemplate, { format: 'A4' }).toStream(function (err, stream) {
+            pdf.create(htmlTemplate, { format: 'A4', orientation: 'landscape' }).toStream(function (err, stream) {
                 stream.pipe(writeStream);
             });
             writeStream.on('finish', function () {
