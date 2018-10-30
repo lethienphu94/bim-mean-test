@@ -26,6 +26,7 @@ module.exports = (req, res) => {
                     margin: 10px;
                     padding: 0;
                     font-size: 8px;
+                    font-family: Arial;
                 }
 
                 .header {
@@ -67,6 +68,7 @@ module.exports = (req, res) => {
                     border: 1px solid black;
                     font-size: 8px;
                     font-weight: normal;
+                    font-family: Arial;
                 }
 
                 .content table {
@@ -87,8 +89,9 @@ module.exports = (req, res) => {
                     font-size: 8px;
                     position: relative;
                     z-index: 1;
-                    background-color: #ddd;
+                    background-color: gray;
                     margin-top: 5px;
+                    font-family: Arial;
                 }
 
             </style>
@@ -138,10 +141,27 @@ module.exports = (req, res) => {
         });
     }
 
-    function getListLOD(idBIM) { //Get List LOD
+    function getListLOD(BIM) { //Get List LOD
         return new Promise(function (resolve, reject) {
-            // Default : 
-            resolve(['LOD100', 'LOD200', 'LOD300', 'LOD350', 'LOD400']);
+            let attributeRequire = ['descriptions', 'parameters', 'images'];
+            let lengthAttributeRequire = attributeRequire.length ;
+            let indexAttribtue = 0;
+            let listLODDefault = ['LOD100', 'LOD200', 'LOD300', 'LOD350', 'LOD400'];
+            function getValueLOD() {
+                if(indexAttribtue < lengthAttributeRequire) {
+                    let nameAttribute = attributeRequire[indexAttribtue];
+                    let valueAttribute = BIM[nameAttribute];
+                    if(Array.isArray(valueAttribute) === false || typeof valueAttribute[0]['lodLevels']  !== 'object') {
+                        ++indexAttribtue;
+                        return getValueLOD();
+                    }else {
+                        return Object.keys(valueAttribute[0]['lodLevels']);
+                    }
+                } else
+                    return listLODDefault;
+            } 
+           
+            resolve(getValueLOD());
         });
     }
 
@@ -150,7 +170,7 @@ module.exports = (req, res) => {
             let lengthBIM = dataBIM.length -1 ;
             asyncForEach(dataBIM,async (BIM, indexBIM) => {
                
-                let listLOD =  await getListLOD(BIM['_id']); // List LOD detail BIM
+                let listLOD =  await getListLOD(BIM); // List LOD detail BIM
              
                 // let writeHeader =  writeHeader(BIM);
                 htmlHeader = '';
